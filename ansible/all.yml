@@ -1,0 +1,51 @@
+---
+- name: Build main manager
+  hosts: deploy
+  roles:
+    - role: repository
+      tags: repository
+    - role: composer_init
+      tags: composer_init
+    - role: composer_install
+      tags: composer_install
+    - role: docker_init
+      tags: docker_init
+    - role: build
+      tags: build
+    - role: swarm_init
+      tags: swarm_init
+    - role: docker_deploy
+      tags: docker_deploy
+    - role: swarm_leave
+      node_name: server2
+      tags: swarm_leave
+
+- name: Manager
+  hosts: managers
+  roles:
+    - role: repository
+      tags: repository
+    - role: composer_init
+      tags: composer_init
+    - role: composer_install
+      tags: composer_install
+    - role: docker_init
+      tags: docker_init
+    - role: swarm_join
+      type: manager
+      tags: swarm_join
+
+- name: Worker
+  hosts: workers
+  roles:
+    - role: repository
+      tags: repository
+    - role: composer_init
+      tags: composer_init
+    - role: composer_install
+      tags: composer_install
+    - role: docker_init
+      tags: docker_init
+    - role: swarm_join
+      type: worker
+      tags: swarm_join

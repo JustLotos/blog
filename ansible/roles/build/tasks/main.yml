@@ -1,0 +1,14 @@
+---
+- name: Авторизация в Registry
+  community.docker.docker_login:
+    registry_url: https://ghcr.io
+    username: justlotos
+    password: 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
+    reauthorize: true
+
+- name: Скачивание образов из Registry
+  community.docker.docker_image:
+    name: "{{ registry_name }}/{{ item.name }}:{{ item.version }}"
+    tag: "{{ item.version }}"
+    source: pull
+  loop: "{{ services }}"

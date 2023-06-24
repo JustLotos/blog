@@ -1,0 +1,34 @@
+---
+- name: Установка Composer
+  vars:
+    installer: /tmp/installer.php
+  block:
+  - name: Install php-cli
+    apt:
+      name: php-cli
+      state: present
+    tags:
+      - composer
+
+  - name: Download composer
+    get_url:
+      url: https://getcomposer.org/installer
+      dest: "{{ installer }}"
+    tags:
+      - composer
+
+  - name: Install composer
+    command: "{{ item }}"
+    with_items:
+      - "php {{ installer }}"
+      - mv composer.phar /usr/local/bin/composer
+    tags:
+      - composer
+
+  - name: Remove composer installer
+    file:
+      path: "{{ installer }}"
+      state: absent
+    tags:
+      - composer
+  become: yes

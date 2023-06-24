@@ -1,0 +1,5 @@
+---
+- name: Установка модулей composer
+  community.general.composer:
+    command: install
+    working_dir: /home/vagrant/app

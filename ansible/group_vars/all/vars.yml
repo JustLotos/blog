@@ -1,0 +1,20 @@
+---
+registry_name: "ghcr.io/justlotos"
+
+git_folder: /home/vagrant/app
+
+services:
+  - name: postgres
+    version: latest
+  - name: php
+    version: v2
+  - name: nginx
+    version: latest
+
+advertise_addr: 10.11.10.2
+
+postgresEnv:
+  - name: POSTGRES_USER
+    value: pguser
+  - name: POSTGRES_PASSWORD
+    value: pguser

@@ -1,0 +1,15 @@
+---
+- name: Подключение Manager
+  community.docker.docker_swarm:
+    state: join
+    remote_addrs: "{{ advertise_addr }}"
+    join_token: "{{ hostvars['server1']['ansible_facts']['token_manager'] }}"
+  when: type == "manager"
+
+- name: Подключение Worker
+  community.docker.docker_swarm:
+    state: join
+    remote_addrs: "{{ advertise_addr }}"
+    join_token: "{{ hostvars['server1']['ansible_facts']['token_worker'] }}"
+  when: type == "worker"
+

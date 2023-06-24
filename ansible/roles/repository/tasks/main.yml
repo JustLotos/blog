@@ -1,0 +1,11 @@
+---
+- name: Удаляем репозиторий
+  file:
+    path: "{{ git_folder }}"
+    state: absent
+
+- name: Клонируем репозиторий
+  git:
+    repo: "https://github.com/JustLotos/flash.git"
+    dest: "{{ git_folder }}"
+    version: master

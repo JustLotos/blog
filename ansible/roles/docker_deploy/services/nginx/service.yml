@@ -1,0 +1,31 @@
+---
+- name: "[{{ name }}] Конфигурация конфига"
+  include: "../config.yml"
+  loop:
+    - default.conf
+  loop_control:
+    loop_var: config_item
+
+- name: "[{{ name }}] Выкладка сервиса"
+  block:
+    - name: "[{{ name }}] Выкладываем сервис"
+      community.docker.docker_swarm_service:
+        name: "{{ name }}"
+        image: "{{ registry_name }}/{{ name }}:{{ version }}"
+        working_dir: /app
+        mounts:
+          - source: "{{ git_folder }}"
+            target: /app/
+            type: bind
+        state: present
+        networks:
+          - name: "{{ network_name }}"
+        publish:
+          - mode: ingress
+            protocol: tcp
+            published_port: 80
+            target_port: 80
+        configs:
+          - config_name: default.conf
+            filename: "/etc/nginx/conf.d/default.conf"
+  tags: "{{ name }}"

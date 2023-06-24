@@ -1,0 +1,31 @@
+---
+- name: "[{{ name }}] Конфигурация конфига"
+  include: "../config.yml"
+  loop:
+    - php.ini
+  loop_control:
+    loop_var: config_item
+
+- name: "[{{ name }}] Выкладка сервиса"
+  block:
+    - name: "[{{ name }}] Выкладываем сервис"
+      community.docker.docker_swarm_service:
+        name: "{{ name }}"
+        image: "{{ registry_name }}/{{ name }}:{{ version }}"
+        working_dir: /app
+        mounts:
+          - source: "{{ git_folder }}"
+            target: /app/
+            type: bind
+        state: present
+        networks:
+          - name: "{{ network_name }}"
+        publish:
+          - mode: ingress
+            protocol: tcp
+            published_port: 9000
+            target_port: 9000
+        configs:
+          - config_name: php.ini
+            filename: "/usr/local/etc/php/conf.d/40-custom.ini"
+  tags: "{{ name }}"

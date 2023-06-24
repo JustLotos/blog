@@ -1,0 +1,26 @@
+---
+- name: "[{{ name }}] Конфигурация секрета"
+  include: "../secret.yml"
+
+- name: "[{{ name }}] Выкладка сервиса"
+  block:
+    - name: "[{{ name }}] Выкладываем сервис"
+      community.docker.docker_swarm_service:
+        name: "{{ name }}"
+        image: "{{ registry_name }}/{{ name }}:{{ version }}"
+        state: present
+        tty: yes
+        networks:
+          - name: "{{ network_name }}"
+        publish:
+          - mode: ingress
+            protocol: tcp
+            published_port: 5432
+            target_port: 5432
+        env:
+          POSTGRES_USER: "pguser"
+          POSTGRES_PASSWORD: "pguser"
+        secrets:
+          - secret_name: "{{ name }}.env"
+            filename: "/opt/app/.env"
+  tags: "{{ name }}"
