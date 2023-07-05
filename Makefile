@@ -127,3 +127,17 @@ lexik-jwt-install:
 build-image-php:
  	docker build -t ghcr.io/justlotos/php:latest --file ./docker/images/php/Dockerfile .
 
+# Ansible
+ans_docker_setup:
+	ansible-playbook -i ./ansible/inventory -t "docker_init" all.yml
+
+ans_image_build:
+	ansible-playbook -i ./ansible/inventory -t "image_build" ./ansible/all.yml
+	ansible-playbook -i ./ansible/inventory -t "docker_deploy" ./ansible/all.yml
+
+ans_create_swarm:
+	ansible-playbook -i ./ansible/inventory -t "swarm_init, swarm_join" ./ansible/all.yml
+
+ans_repo:
+	ansible-playbook -i ./ansible/inventory -t "repository" ./ansible/all.yml
+
