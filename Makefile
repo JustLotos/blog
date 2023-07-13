@@ -124,6 +124,9 @@ lexik-jwt-install:
 	openssl pkey -in config/jwt/private.pem -out config/jwt/public.pem -pubout -passin pass:root
 
 
+login:
+	docker login --username=justlotos ghrc.io
+
 build-image-php:
  	docker build -t ghcr.io/justlotos/php:latest --file ./docker/images/php/Dockerfile .
 
@@ -135,9 +138,18 @@ ans_image_build:
 	ansible-playbook -i ./ansible/inventory -t "image_build" ./ansible/all.yml
 	ansible-playbook -i ./ansible/inventory -t "docker_deploy" ./ansible/all.yml
 
-ans_create_swarm:
+docker_deploy:
+	ansible-playbook -i ./ansible/inventory -t "docker_deploy" ./ansible/all.yml
+
+create_swarm:
 	ansible-playbook -i ./ansible/inventory -t "swarm_init, swarm_join" ./ansible/all.yml
+
+swarm_destroy:
+	ansible-playbook -i ./ansible/inventory -t "swarm_destroy" ./ansible/all.yml
 
 ans_repo:
 	ansible-playbook -i ./ansible/inventory -t "repository" ./ansible/all.yml
 
+restart_cluster: swarm_destroy create_swarm docker_deploy
+
+#docker run -w /app/ -v /home/vagrant/app/:/app/ -it ghcr.io/justlotos/php:8.1-fpm-v3 bash
