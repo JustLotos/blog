@@ -1,7 +1,7 @@
 FROM php:8.1-fpm
-MAINTAINER Plopix
+MAINTAINER justlotos
 
-RUN mkdir -p /usr/share/man/man1 && apt-get update -q -y && apt-get install -q -y --no-install-recommends build-essential libxml2-dev libmemcached-dev libmemcached11 libssl-dev libfreetype6-dev rsync \
+RUN mkdir -p /usr/share/man/man1 && apt-get update -q -y && apt-get install -q -y --no-install-recommends build-essential libpq-dev libxml2-dev libmemcached-dev libmemcached11 libssl-dev libfreetype6-dev rsync \
     libcurl4-openssl-dev libzip-dev npm libmagickwand-dev libmagickcore-dev libjpeg62-turbo-dev libmcrypt-dev libxpm-dev libpng-dev libicu-dev libxslt1-dev ca-certificates openssl \
     default-mysql-client python3 openssh-client default-jre default-jre-headless curl unzip git imagemagick wget gnupg jpegoptim && \
     rm -rf /var/lib/apt/lists/* && \
@@ -16,8 +16,7 @@ RUN cd /usr/src && \
     cd pngquant-2.12.5 && make && make install && \
     cd .. && rm pngquant-2.12.5-src.tar.gz && rm -rf pngquant-2.12.5
 
-RUN docker-php-ext-configure mysqli --with-mysqli=mysqlnd && \
-    docker-php-ext-configure pdo_mysql --with-pdo-mysql=mysqlnd && \
+RUN docker-php-ext-configure pgsql -with-pgsql=/usr/local/pgsql  && \
     docker-php-ext-configure gd --with-freetype --with-jpeg --with-xpm && \
     echo "autodetect" | pecl install imagick && \
     echo "no" | pecl install mongodb && \
@@ -25,7 +24,7 @@ RUN docker-php-ext-configure mysqli --with-mysqli=mysqlnd && \
     echo "no" | pecl install memcached && \
     pecl install xdebug && \
     docker-php-ext-enable memcached mongodb opcache imagick redis && \
-    docker-php-ext-install mysqli pdo_mysql exif gd pcntl
+    docker-php-ext-install pdo pgsql pdo_pgsql \exif gd pcntl
 
 RUN docker-php-ext-install intl xsl zip
 
