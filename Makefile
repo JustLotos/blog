@@ -131,24 +131,25 @@ build-image-php:
  	docker build -t ghcr.io/justlotos/php:latest --file ./docker/images/php/Dockerfile .
 
 # Ansible
+# Первый шаг в запуске приложения
 ans_docker_setup:
-	ansible-playbook -i ./ansible/inventory -t "docker_init" all.yml
+	ansible-playbook -i ./ansible/inventory/cluster-dev -t "docker_init" all.yml
 
 ans_image_build:
-	ansible-playbook -i ./ansible/inventory -t "image_build" ./ansible/all.yml
-	ansible-playbook -i ./ansible/inventory -t "docker_deploy" ./ansible/all.yml
+	ansible-playbook -i ./ansible/inventory/cluster-dev -t "image_build" ./ansible/all.yml
+	ansible-playbook -i ./ansible/inventory/cluster-dev -t "docker_deploy" ./ansible/all.yml
 
+# Обновление сервисов
 docker_deploy:
-	ansible-playbook -i ./ansible/inventory -t "docker_deploy" ./ansible/all.yml
-
+	ansible-playbook -i ./ansible/inventory/cluster-dev -t "docker_deploy" ./ansible/all.yml
 create_swarm:
-	ansible-playbook -i ./ansible/inventory -t "swarm_init, swarm_join" ./ansible/all.yml
+	ansible-playbook -i ./ansible/inventory/cluster-dev -t "swarm_init, swarm_join" ./ansible/all.yml
 
 swarm_destroy:
-	ansible-playbook -i ./ansible/inventory -t "swarm_destroy" ./ansible/all.yml
+	ansible-playbook -i ./ansible/inventory/cluster-dev -t "swarm_destroy" ./ansible/all.yml
 
 ans_repo:
-	ansible-playbook -i ./ansible/inventory -t "repository" ./ansible/all.yml
+	ansible-playbook -i ./ansible/inventory/cluster-dev -t "repository" ./ansible/all.yml
 
 restart_cluster: swarm_destroy create_swarm docker_deploy
 
